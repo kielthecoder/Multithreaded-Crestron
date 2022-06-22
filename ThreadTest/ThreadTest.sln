@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThreadTest", "ThreadTest.csproj", "{430ADF65-BB80-44ED-922A-03C57108CD17}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{430ADF65-BB80-44ED-922A-03C57108CD17}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{430ADF65-BB80-44ED-922A-03C57108CD17}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{430ADF65-BB80-44ED-922A-03C57108CD17}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{430ADF65-BB80-44ED-922A-03C57108CD17}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
