@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Crestron.SimplSharp;
 
 namespace ThreadTest
@@ -42,10 +39,7 @@ namespace ThreadTest
 
         public void Stop()
         {
-            if (_running)
-            {
-                _running = false;
-            }
+            _running = false;
         }
 
         private void DoWork(object userObj)
