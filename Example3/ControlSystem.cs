@@ -10,6 +10,7 @@ namespace Example3
     public class ControlSystem : CrestronControlSystem
     {
         public const int MAX_CONNECTIONS = 5;
+        public const int INACTIVITY_DELAY_MS = 10000;
 
         private TCPServer _server;
         private Thread[] _timers;
@@ -163,13 +164,14 @@ namespace Example3
 
             while (_server.ClientConnected(index))
             {
-                Thread.Sleep(5000);
+                Thread.Sleep(INACTIVITY_DELAY_MS);
 
-                if (_lastActivity[index - 1] + 5000 < CrestronEnvironment.TickCount)
+                if (_lastActivity[index - 1] + INACTIVITY_DELAY_MS < CrestronEnvironment.TickCount)
                 {
                     var msg = Encoding.ASCII.GetBytes("\r\nGoodbye?\r\n");
                     _server.SendData(index, msg, msg.Length);
                     _server.Disconnect(index);
+                    break;
                 }
             }
 
