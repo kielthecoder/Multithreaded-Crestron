@@ -12,13 +12,15 @@ namespace Example3
         public const int MAX_CONNECTIONS = 5;
 
         private TCPServer _server;
+        private Thread[] _timers;
+        private int[] _lastActivity;
 
         public ControlSystem() : base()
         {
             try
             {
                 Thread.MaxNumberOfUserThreads = 25;
-
+                
                 CrestronEnvironment.ProgramStatusEventHandler += HandleProgramStatus;
             }
             catch (Exception e)
@@ -31,6 +33,9 @@ namespace Example3
         {
             try
             {
+                _timers = new Thread[MAX_CONNECTIONS];
+                _lastActivity = new int[MAX_CONNECTIONS];
+
                 _server = new TCPServer("0.0.0.0", 9999, 1000,
                     EthernetAdapterType.EthernetLANAdapter, MAX_CONNECTIONS);
 
@@ -72,6 +77,10 @@ namespace Example3
                     {
                         var msg = Encoding.ASCII.GetBytes(String.Format("Hello, you are client #{0}.  Type HELP if lost.\r\n", index));
                         srv.SendData(index, msg, msg.Length);
+
+                        _lastActivity[index - 1] = CrestronEnvironment.TickCount;
+                        _timers[index - 1] = new Thread(CheckForActivity, index);
+                        
                         srv.ReceiveDataAsync(index, ClientDataReceive, 0, null);
                     }
                     catch (Exception e)
@@ -97,6 +106,8 @@ namespace Example3
 
                     CrestronConsole.PrintLine("Received {0} bytes from client #{1}:", bytesReceived, index);
                     CrestronConsole.PrintLine("  {0}", str);
+
+                    _lastActivity[index - 1] = CrestronEnvironment.TickCount;
 
                     var words = str.Split(' ');
                     var cmd = words[0].ToUpper();
@@ -142,6 +153,29 @@ namespace Example3
                     CrestronConsole.PrintLine("Exception in ClientDataReceive: {0}", e.Message);
                 }
             }
+        }
+
+        private object CheckForActivity(object userObj)
+        {
+            var index = (uint)userObj;
+
+            CrestronConsole.PrintLine("Started inactivity thread for client #{0}...", index);
+
+            while (_server.ClientConnected(index))
+            {
+                Thread.Sleep(5000);
+
+                if (_lastActivity[index - 1] + 5000 < CrestronEnvironment.TickCount)
+                {
+                    var msg = Encoding.ASCII.GetBytes("\r\nGoodbye?\r\n");
+                    _server.SendData(index, msg, msg.Length);
+                    _server.Disconnect(index);
+                }
+            }
+
+            CrestronConsole.PrintLine("Leaving inactivity thread for client #{0}...", index);
+
+            return null;
         }
     }
 }
